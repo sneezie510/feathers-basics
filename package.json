@@ -1,0 +1,19 @@
+{
+  "name": "feathers-basics",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@feathersjs/errors": "^3.3.0",
+    "@feathersjs/express": "^1.2.2",
+    "@feathersjs/feathers": "^3.1.4",
+    "@feathersjs/socketio": "^3.2.1",
+    "feathers-memory": "^2.1.1"
+  }
+}
