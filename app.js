@@ -1,5 +1,6 @@
 const feathers = require('@feathersjs/feathers');
 const express = require('@feathersjs/express');
+const socketio = require('@feathersjs/socketio');
 const memory = require('feathers-memory');
 
 class Messages {
@@ -74,6 +75,15 @@ app.configure(express.rest());
 // a new instance of our class
 // app.use('messages', new Messages());
 
+// Configure the Socket.io transport
+app.configure(socketio());
+
+// On any real-time connection, add it to the `everybody` channel
+app.on('connection', connection => app.channel('everybody').join(connection));
+
+// Publish all events to the `everybody` channel
+app.publish(() => app.channel('everybody'));
+
 // Initialize the messages service
 app.use('messages', memory({
   paginate: {
@@ -95,48 +105,48 @@ app.service('messages').create({
 
 server.on('listening', () => console.log('Feathers REST API started at http://localhost:3030'));
 
-async function createAndFind() {
-  // Stores a reference to the messages service so we don't have to call it all the time
-  const messages = app.service('messages');
+// async function createAndFind() {
+//   // Stores a reference to the messages service so we don't have to call it all the time
+//   const messages = app.service('messages');
 
-  for (let counter = 0; counter < 100; counter++) {
-    await messages.create({
-      counter,
-      message: `Message number ${counter}`
-    });
-  }
+//   for (let counter = 0; counter < 100; counter++) {
+//     await messages.create({
+//       counter,
+//       message: `Message number ${counter}`
+//     });
+//   }
 
-  // We show 10 entries by default. By skipping 10 we go to page 2
-  const page2 = await messages.find({
-    query: { $skip: 10 }
-  });
+//   // We show 10 entries by default. By skipping 10 we go to page 2
+//   const page2 = await messages.find({
+//     query: { $skip: 10 }
+//   });
 
-  console.log('Page number 2', page2);
+//   console.log('Page number 2', page2);
 
-  // Show 20 items per page
-  const largePage = await messages.find({
-    query: { $limit: 20 }
-  });
+//   // Show 20 items per page
+//   const largePage = await messages.find({
+//     query: { $limit: 20 }
+//   });
 
-  console.log('20 items', largePage);
+//   console.log('20 items', largePage);
 
-  // Find the first 10 items with counter greater 50 and less than 70
-  const counterList = await messages.find({
-    query: {
-      counter: { $gt: 50, $lt: 70 }
-    }
-  });
+//   // Find the first 10 items with counter greater 50 and less than 70
+//   const counterList = await messages.find({
+//     query: {
+//       counter: { $gt: 50, $lt: 70 }
+//     }
+//   });
 
-  console.log('Counter greater 50 and less than 70', counterList);
+//   console.log('Counter greater 50 and less than 70', counterList);
 
-  // Find all entries with text "Message number 20"
-  const message20 = await messages.find({
-    query: {
-      message: 'Message number 20'
-    }
-  });
+//   // Find all entries with text "Message number 20"
+//   const message20 = await messages.find({
+//     query: {
+//       message: 'Message number 20'
+//     }
+//   });
 
-  console.log('Entries with text "Message number 20"', message20);
-}
+//   console.log('Entries with text "Message number 20"', message20);
+// }
 
-createAndFind();
+// createAndFind();
